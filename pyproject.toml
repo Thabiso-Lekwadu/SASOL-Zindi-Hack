@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sasol_clv"
+version = "0.1.0"
+description = "Sasol Customer Value Recruitment Challenge (Zindi)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "kedro>=1.0,<2.0",
+    "kedro-datasets[pandas-csvdataset,pandas-parquetdataset,pickle-pickledataset,json-jsondataset]>=5.0",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "scikit-learn>=1.4",
+    "pyarrow>=14",
+    "matplotlib>=3.7",
+    "seaborn>=0.13",
+    "jupyterlab>=4.0",
+]
+
+[tool.kedro]
+package_name = "sasol_clv"
+project_name = "sasol_clv"
+kedro_init_version = "1.6.0"
+source_dir = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.kedro_telemetry]
+project_id = "40b906205d4e4543a4625c083b844979"

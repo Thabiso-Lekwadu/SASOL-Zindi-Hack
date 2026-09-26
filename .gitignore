@@ -1,0 +1,17 @@
+# data never goes to git (no licence to share)
+data/**
+!data/**/.gitkeep
+
+# local secrets and settings
+conf/local/**
+!conf/local/.gitkeep
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+*.egg-info/
+.viz
+info.log
+errors.log

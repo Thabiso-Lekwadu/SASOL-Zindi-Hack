@@ -1,0 +1,84 @@
+# everything we might want to tweak lives here
+
+seed: 42
+
+# the test customers are scored on Dec 2025 to Feb 2026
+test_cutoff: "2025-12-01"
+
+# we rebuild the same kind of problem at earlier month starts so we have labelled rows
+# each cutoff needs 3 full months of future data inside train.csv, so the last one is 2025-09-01
+train_cutoffs:
+  - "2024-06-01"
+  - "2024-07-01"
+  - "2024-08-01"
+  - "2024-09-01"
+  - "2024-10-01"
+  - "2024-11-01"
+  - "2024-12-01"
+  - "2025-01-01"
+  - "2025-02-01"
+  - "2025-03-01"
+  - "2025-04-01"
+  - "2025-05-01"
+  - "2025-06-01"
+  - "2025-07-01"
+  - "2025-08-01"
+  - "2025-09-01"
+
+# local validation, same shape as the leaderboard (one unseen quarter)
+# we only train on cutoffs whose future window ends before this date so nothing leaks
+validation_cutoff: "2025-09-01"
+
+# windows (days) used to summarise recent behaviour
+feature_windows: [30, 90, 180]
+
+# categories that get their own spend columns
+focus_categories:
+  - Fuel
+  - Beverages
+  - Food & beverage
+  - Confectionary
+  - Snacking
+  - Tobacco
+  - Breads & rolls
+  - Groceries
+  - Lubricants
+  - Ice-cream
+  - Braai & Ice
+  - Coffee
+  - Seattle
+  - Perishables
+
+# model settings
+# early stopping is off on purpose: rows from the same customer at nearby cutoffs are almost the same,
+# so a random early stopping split leaks and the model trains too long. strong regularisation works better.
+regressor:
+  max_iter: 500
+  learning_rate: 0.02
+  max_leaf_nodes: 15
+  min_samples_leaf: 300
+  l2_regularization: 10.0
+  max_features: 0.5
+  early_stopping: false
+
+classifier:
+  max_iter: 200
+  learning_rate: 0.05
+  max_leaf_nodes: 15
+  min_samples_leaf: 300
+  l2_regularization: 10.0
+  max_features: 0.5
+  early_stopping: false
+
+# first cutoff the classifier learns from (see modelling/nodes.py)
+classifier_min_cutoff: "2024-07-01"
+
+# the regressors average this many seeds, the classifier uses the first one
+seeds: [42, 7, 2026]
+
+# weighted F1 rewards the big classes, but the model almost never picks the small ones.
+# we give the small classes a nudge before taking the top class. picked on two validation quarters.
+class_boost:
+  big: 1.0              # Stable, Inactivity, Existing-category growth: Fuel
+  other_growth: 2.0     # every other Existing-category growth label
+  adoption: 3.0         # every New category adoption label

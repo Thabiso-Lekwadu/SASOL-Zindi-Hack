@@ -1,0 +1,77 @@
+# raw files from zindi, drop them in data/01_raw
+
+raw_transactions:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/train.csv
+  load_args:
+    # ID and product codes are codes, not numbers
+    dtype:
+      ID: str
+      TransactionId: str
+      LocationId: str
+      StockItemId: str
+    # the category "NA" is a real value so we must not turn it into NaN
+    keep_default_na: false
+    na_values: [""]
+
+raw_test:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/test.csv
+  load_args:
+    dtype:
+      ID: str
+
+sample_submission:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/SampleSubmission.csv
+  load_args:
+    dtype:
+      ID: str
+
+label_config:
+  type: json.JSONDataset
+  filepath: data/01_raw/label_config.json
+
+# cleaned transactions
+transactions:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/transactions.parquet
+
+# one row per customer per cutoff, with features and labels
+train_table:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/train_table.parquet
+
+test_table:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/test_table.parquet
+
+# models
+validation_models:
+  type: pickle.PickleDataset
+  filepath: data/06_models/validation_models.pkl
+
+final_models:
+  type: pickle.PickleDataset
+  filepath: data/06_models/final_models.pkl
+
+validation_predictions:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/validation_predictions.csv
+  save_args:
+    index: false
+    lineterminator: "\n"
+
+validation_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/validation_metrics.json
+  save_args:
+    indent: 2
+
+submission:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/submission.csv
+  save_args:
+    index: false
+    # plain line endings, windows otherwise adds blank rows and zindi rejects the file
+    lineterminator: "\n"
